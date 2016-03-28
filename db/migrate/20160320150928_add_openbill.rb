@@ -1,7 +1,9 @@
 class AddOpenbill < ActiveRecord::Migration
   def up
-    Dir.glob(sql_dir + '*.sql') do |file|
-      execute File.read file
+    Dir.entries(sql_dir).select{|f| File.file? sql_dir + f }.sort.each do |file|
+      say_with_time "Migrate with #{file}" do
+        execute File.read sql_dir + file
+      end
     end
   end
 
