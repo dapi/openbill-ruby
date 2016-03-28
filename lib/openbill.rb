@@ -30,7 +30,7 @@ module Openbill
     end
 
     def current
-      @current ||= Openbill::Service.new config.database_config
+      @current ||= Openbill::Service.new config.database
     end
   end
 end
