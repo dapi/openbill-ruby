@@ -26,6 +26,9 @@ Openbill.config.database = ActiveRecord::Base.connection.instance_variable_get('
 
 ## Usage
 
+### Создание системных счетов
+
+
 Рекомендую создать такой сервис для работы с системными счетами:
 
 ```ruby
@@ -33,11 +36,11 @@ module Billing
   NS = :system
 
   class << self
-    def payments_account
+    def payments
       account :payments, 'Счет с которого поступает оплата'
     end
 
-    def subscription_account
+    def subscriptions
       account :subscriptions, 'Абонентская плата'
     end
 
@@ -54,7 +57,58 @@ module Billing
     end
   end
 end
-TODO: Write usage instructions here
+```
+
+Таким образом в системе появляется два счета `Billing.payments` и `Billing.subscriptions`
+
+### Поддержка биллинга со стороны клиента (автоматическое создание клиентского счета):
+
+```
+module AccountBilling
+  extend ActiveSupport::Concern
+
+  included do
+    after_commit :attach_billing, on: :create
+  end
+
+  delegate :amount, to: :billing_account
+
+  def billing_account
+    find_billing || attach_billing
+  end
+
+  private
+
+  def account_uri
+    Openbill.generate_uri :accounts, id
+  end
+
+  def find_billing
+    Openbill.current.get_account_by_uri account_uri
+  end
+
+  def attach_billing
+    Openbill.current.create_account account_uri
+  end
+end
+```
+
+Добавляем concern в модель ответсвенную за счет (например в User)
+
+
+### Прием оплаты.
+
+Оплата проводится транзакцией между системным счетом `payments` и счетом клиента.
+
+```ruby
+Openbill.current.make_transaction(
+  from_account_id: Billing.payment.id,
+  to_account_id:   user.billing_account.id,
+  amount:          Money(123),
+  details:         'Оплата такая-то',
+  meta:            { key: 'value' } // не обязательно
+)
+```
 
 ## Development
 
