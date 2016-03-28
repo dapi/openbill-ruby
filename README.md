@@ -20,6 +20,12 @@ Or install it yourself as:
 
     $ gem install openbill
 
+
+
+    Openbill.create_connection do
+      new ActiveRecord::Base.connection.instance_variable_get('@config')
+    end
+
 ## Usage
 
 TODO: Write usage instructions here

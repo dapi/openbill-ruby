@@ -7,10 +7,6 @@ module Openbill
   DEFAULT_CURRENCY        = 'RUB'.freeze
 
   class Service
-    def self.rails_initialize
-      new ActiveRecord::Base.connection.instance_variable_get('@config')
-    end
-
     def initialize(db_config)
       init_db db_config
     end
@@ -22,7 +18,7 @@ module Openbill
     def create_account(uri, currency: DEFAULT_CURRENCY, details: nil, meta: {})
       uri = prepare_uri uri
       Openbill::Account.create(
-        uri:       uri,
+        uri:             uri,
         details:         details,
         meta:            meta,
         amount_currency: currency
@@ -34,12 +30,12 @@ module Openbill
       amount = prepare_amount amoount
       uri = prepare_uri uri
 
-      Transaction.create(
+      Openbill::Transaction.create(
         from_account_id: from_account_id,
         to_account_id:   to_account_id,
         amount_cents:    amount.cents,
         amount_currency: amount.currency,
-        uri:       uri,
+        uri:             uri,
         details:         details,
         meta:            meta
       )
