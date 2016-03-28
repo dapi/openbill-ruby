@@ -1,8 +1,6 @@
 # Openbill
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/openbill`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Это модуль для биллиноговой системы (openbill-core)[https://github.com/dapi/openbill-core].
 
 ## Installation
 
@@ -16,18 +14,46 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Migrate database:
 
-    $ gem install openbill
+    $ rake db:migrate
 
+Add database configurartion to `./config/initializers/openbill.rb`
 
-
-    Openbill.create_connection do
-      new ActiveRecord::Base.connection.instance_variable_get('@config')
-    end
+```ruby
+Openbill.config.database = ActiveRecord::Base.connection.instance_variable_get('@config');
+```
 
 ## Usage
 
+Рекомендую создать такой сервис для работы с системными счетами:
+
+```ruby
+module Billing
+  NS = :system
+
+  class << self
+    def payments_account
+      account :payments, 'Счет с которого поступает оплата'
+    end
+
+    def subscription_account
+      account :subscriptions, 'Абонентская плата'
+    end
+
+    private
+
+    # Находит, или создает аккаунт с указанным именем
+    #
+    def account(path, details)
+      # Создаем uri аккаунта из его названия
+      uri = Openbill.generate_uri NS, path
+
+      Openbill.get_account_by_uri(uri) ||
+        Openbill.create_account(uri, details: details)
+    end
+  end
+end
 TODO: Write usage instructions here
 
 ## Development
