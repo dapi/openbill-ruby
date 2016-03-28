@@ -63,7 +63,7 @@ end
 
 ### Поддержка биллинга со стороны клиента (автоматическое создание клиентского счета):
 
-```
+```ruby
 module AccountBilling
   extend ActiveSupport::Concern
 
