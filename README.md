@@ -7,7 +7,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'openbill'
+gem 'openbill-ruby'
 ```
 
 And then execute:
