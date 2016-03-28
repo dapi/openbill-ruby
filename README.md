@@ -1,6 +1,6 @@
 # Openbill
 
-Это модуль для биллиноговой системы (openbill-core)[https://github.com/dapi/openbill-core].
+Это модуль для биллиноговой системы [openbill-core](https://github.com/dapi/openbill-core).
 
 ## Installation
 
