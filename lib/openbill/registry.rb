@@ -1,14 +1,14 @@
 module Openbill
   class Registry
-    SYSTEM_NS = :system
+    DEFAULT_CATEGORY = :common
     AccountNotFound = Class.new StandardError
 
     attr_reader :accounts
 
-    def initialize(service, system_ns = SYSTEM_NS)
+    def initialize(service, category = DEFAULT_CATEGORY)
       fail("Must be a Openbill::Service #{service}") unless service.is_a? Openbill::Service
       @service = service
-      @system_ns = system_ns
+      @category = category
       @accounts = {}
       yield self
       @accounts.freeze
@@ -17,7 +17,7 @@ module Openbill
     # Находит, или создает аккаунт с указанным именем
     #
     def define(name, details)
-      accounts[name] = service.account([system_ns, name], details: details)
+      accounts[name] = service.account([category, name], details: details)
     end
 
     def [](name)
@@ -30,6 +30,6 @@ module Openbill
 
     private
 
-    attr_reader :service, :system_ns
+    attr_reader :service, :category
   end
 end
