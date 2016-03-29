@@ -94,6 +94,7 @@ Openbill.current.make_transaction(
 
 ## Development
 
+Сброс миграции:
 
 > bundle exec rake db:migrate:down VERSION=20160320150928
 
