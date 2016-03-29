@@ -4,6 +4,7 @@ module Openbill
   autoload :Account,       'openbill/account'
   autoload :Transaction,   'openbill/transaction'
   autoload :Configuration, 'openbill/configuration'
+  autoload :Registry,      'openbill/registry'
 
   ACCOUNTS_TABLE_NAME     = :openbill_accounts
   TRANSACTIONS_TABLE_NAME = :openbill_transactions
@@ -21,16 +22,10 @@ module Openbill
       Configuration.instance
     end
 
-    def generate_uri(resource, id)
-      "obp://local/#{resource}/#{id}"
-    end
-
-    def create_connection(&block)
-      @create_connection_block = block
-    end
-
     def current
-      @current ||= Openbill::Service.new config.database
+      return @current if @current
+
+      @current = Openbill::Service.new config
     end
   end
 end

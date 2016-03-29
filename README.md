@@ -1,4 +1,8 @@
-# Openbill
+# Openbill Ruby
+
+[![Build
+Status](https://travis-ci.org/dapi/openbill-ruby.svg)](https://travis-ci.org/dapi/openbill-ruby)
+
 
 Это модуль для биллиноговой системы [openbill-core](https://github.com/dapi/openbill-core).
 
@@ -20,46 +24,22 @@ Migrate database:
 
 Add database configurartion to `./config/initializers/openbill.rb`
 
-```ruby
-Openbill.config.database = ActiveRecord::Base.connection.instance_variable_get('@config');
-```
-
 ## Usage
 
 ### Создание системных счетов
 
-
-Рекомендую создать такой сервис для работы с системными счетами:
-
 ```ruby
-module Billing
-  NS = :system
+Openbill.config.database = 
+  ActiveRecord::Base.connection.instance_variable_get('@config');
 
-  class << self
-    def payments
-      account :payments, 'Счет с которого поступает оплата'
-    end
 
-    def subscriptions
-      account :subscriptions, 'Абонентская плата'
-    end
-
-    private
-
-    # Находит, или создает аккаунт с указанным именем
-    #
-    def account(path, details)
-      # Создаем uri аккаунта из его названия
-      uri = Openbill.generate_uri NS, path
-
-      Openbill.get_account_by_uri(uri) ||
-        Openbill.create_account(uri, details: details)
-    end
-  end
+SystemRegistry = Openbill::Registry.new current do |registry|
+  registry.define :payments,      'Счет с которого поступает оплата'
+  registry.define :subscriptions, 'Абонентская плата'
 end
 ```
 
-Таким образом в системе появляется два счета `Billing.payments` и `Billing.subscriptions`
+Таким образом в системом реестре появляется два счета `SystemRegistry[:payments]` и `SystemRegistry[:subscriptions]`
 
 ### Поддержка биллинга со стороны клиента (автоматическое создание клиентского счета):
 
@@ -74,21 +54,7 @@ module AccountBilling
   delegate :amount, to: :billing_account
 
   def billing_account
-    find_billing || attach_billing
-  end
-
-  private
-
-  def account_uri
-    Openbill.generate_uri :accounts, id
-  end
-
-  def find_billing
-    Openbill.current.get_account_by_uri account_uri
-  end
-
-  def attach_billing
-    Openbill.current.create_account account_uri
+    Openbill.current.account(:accounts, id)
   end
 end
 ```
@@ -102,10 +68,22 @@ end
 
 ```ruby
 Openbill.current.make_transaction(
+  // Счет списания
   from_account_id: Billing.payment.id,
+
+  // Счет зачисление
   to_account_id:   user.billing_account.id,
-  amount:          Money(123),
+  
+  // Уникальный идентификатор транзакции
+  uri:             Openbill.current.generate_uri(:transactions, 123),
+
+  // Сумма транзакции. Валюта должна совпадать с обоими счетами
+  amount:          Money(123, 'RUB'),
+
+  // Не обязательное текстовое описание транзакции
   details:         'Оплата такая-то',
+
+  // hash с данными транзакции для структурированного поиска в дальнейшем
   meta:            { key: 'value' } // не обязательно
 )
 ```
