@@ -8,5 +8,7 @@ module Openbill
       @db.extension :pagination
       @db.extension :pg_hstore
     end
+
+    delegate :logger, to: Rails
   end
 end

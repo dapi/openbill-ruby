@@ -14,7 +14,7 @@ module Openbill
     end
 
     def generate_uri(resource, id)
-      "${PROTO}://${HOST}/#{resource}/#{id}"
+      "#{PROTO}://#{HOST}/#{resource}/#{id}"
     end
 
     # @param uri - uri аккаунта в виде строки: "odp://local/resource/id"
@@ -60,7 +60,7 @@ module Openbill
 
     private
 
-    attr_reader :db_config, :db
+    attr_reader :database, :config
 
     delegate :logger, to: Rails
 

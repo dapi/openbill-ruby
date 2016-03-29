@@ -5,6 +5,7 @@ module Openbill
   autoload :Transaction,   'openbill/transaction'
   autoload :Configuration, 'openbill/configuration'
   autoload :Registry,      'openbill/registry'
+  autoload :Database,      'openbill/database'
 
   ACCOUNTS_TABLE_NAME     = :openbill_accounts
   TRANSACTIONS_TABLE_NAME = :openbill_transactions

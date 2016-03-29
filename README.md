@@ -1,8 +1,4 @@
-# Openbill Ruby
-
-[![Build
-Status](https://travis-ci.org/dapi/openbill-ruby.svg)](https://travis-ci.org/dapi/openbill-ruby)
-
+# Openbill
 
 Это модуль для биллиноговой системы [openbill-core](https://github.com/dapi/openbill-core).
 
@@ -33,7 +29,7 @@ Openbill.config.database =
   ActiveRecord::Base.connection.instance_variable_get('@config');
 
 
-SystemRegistry = Openbill::Registry.new current do |registry|
+SystemRegistry = Openbill::Registry.new Openbill.current do |registry|
   registry.define :payments,      'Счет с которого поступает оплата'
   registry.define :subscriptions, 'Абонентская плата'
 end
@@ -54,7 +50,7 @@ module AccountBilling
   delegate :amount, to: :billing_account
 
   def billing_account
-    Openbill.current.account(:accounts, id)
+    Openbill.current.account([:accounts, id])
   end
 end
 ```
