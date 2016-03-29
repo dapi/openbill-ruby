@@ -7,14 +7,15 @@ BEGIN
   IF current_query() like 'insert into OPENBILL_TRANSACTIONS%' THEN
     RETURN NEW;
   ELSE
-    RAISE EXCEPTION 'Cannot update directly update amount_cents and timestamps of account';
+    RAISE EXCEPTION 'Cannot directly update amount_cents and timestamps of account with query (#%)', current_query();
   END IF;
 END
 
 $disable_update_account$ LANGUAGE plpgsql;
 
-CREATE TRIGGER disable_update_account
-  BEFORE UPDATE ON OPENBILL_ACCOUNTS FOR EACH ROW EXECUTE PROCEDURE disable_update_account();
+-- временно отключаем, так как она не правильно срабатывает на операциях типа INSERT INTO "openbill_transactions"
+-- CREATE TRIGGER disable_update_account
+  -- BEFORE UPDATE ON OPENBILL_ACCOUNTS FOR EACH ROW EXECUTE PROCEDURE disable_update_account();
 
 CREATE OR REPLACE FUNCTION disable_delete_account() RETURNS TRIGGER AS $disable_delete_account$
 BEGIN
