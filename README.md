@@ -25,13 +25,14 @@ Add database configurartion to `./config/initializers/openbill.rb`
 ### Создание системных счетов
 
 ```ruby
-Openbill.config.database = 
-  ActiveRecord::Base.connection.instance_variable_get('@config');
-
+Openbill.configure do |config|
+  config.default_currency = 'RUB'
+  config.database = ActiveRecord::Base.connection.instance_variable_get('@config')
+end
 
 SystemRegistry = Openbill::Registry.new Openbill.current do |registry|
   registry.define :payments,      'Счет с которого поступает оплата'
-  registry.define :subscriptions, 'Абонентская плата'
+  registry.define :subscriptions, 'Абонентская плата с клиентских счетов'
 end
 ```
 
@@ -40,45 +41,54 @@ end
 ### Поддержка биллингово счета в клиентской модели:
 
 ```ruby
-module AccountBilling
+module OpenbillAccountSupport
   extend ActiveSupport::Concern
 
   included do
     after_commit :attach_billing, on: :create
   end
 
-  def billing_account
+  def openbill_account
     Openbill.current.account([:accounts, id])
   end
 end
 ```
 
-Добавляем concern в модель ответсвенную за счет (например в User)
+Добавляем этот `concern` в модель ответсвенную за счет (например в `User`)
 
+### Операции
 
-### Прием оплаты.
+Обычно со стороны пиложения необходимо производить несколько типовыхв операций:
 
-Оплата проводится транзакцией между системным счетом `payments` и счетом клиента.
+1. Зачисление оплаты на счет клиента.
+2. Списание со счета клиента (напримре ежемесячной оплаты).
+3. Просмотр состояния счета клиента.
+
+#### 1. Зачисление оплаты на счет клиента.
+
+Оплата проводится транзакцией между системным счетом `:payments` и индивидуальным счетом клиента.
 
 ```ruby
 Openbill.current.make_transaction(
   // Счет списания
-  from_account_id: Billing.payment.id,
+  from: SystemRegistry[:payments],
 
   // Счет зачисление
-  to_account_id:   user.billing_account.id,
+  to:   user.opennill_account,
   
-  // Уникальный идентификатор транзакции
-  uri:             Openbill.current.generate_uri(:transactions, 123),
+  // Уникальный идентификатор транзакции. Идентификтор должен содержать
+  // ключи исключающие случайное повторное проведение данной транзакции.
+  // Обычно сюда включают номер транзакции из платежного шлюза
+  key:             'N123132131',
 
   // Сумма транзакции. Валюта должна совпадать с обоими счетами
   amount:          Money(123, 'RUB'),
 
-  // Не обязательное текстовое описание транзакции
+  // Не обязательное текстовое описание транзакции. Например детали из платежного шлюза.
   details:         'Оплата такая-то',
 
-  // hash с данными транзакции для структурированного поиска в дальнейшем
-  meta:            { key: 'value' } // не обязательно
+  // Необязательнай hash с данными транзакции для структурированного поиска в дальнейшем
+  meta:            { gateway: :cloudpayments }
 )
 ```
 
