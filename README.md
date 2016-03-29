@@ -37,7 +37,7 @@ end
 
 Таким образом в системом реестре появляется два счета `SystemRegistry[:payments]` и `SystemRegistry[:subscriptions]`
 
-### Поддержка биллинга со стороны клиента (автоматическое создание клиентского счета):
+### Поддержка биллингово счета в клиентской модели:
 
 ```ruby
 module AccountBilling
@@ -46,8 +46,6 @@ module AccountBilling
   included do
     after_commit :attach_billing, on: :create
   end
-
-  delegate :amount, to: :billing_account
 
   def billing_account
     Openbill.current.account([:accounts, id])
