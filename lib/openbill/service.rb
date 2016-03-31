@@ -47,6 +47,12 @@ module Openbill
       )
     end
 
+    def account_transactions(ident)
+      account = ident.is_a?(Openbill::Account) ? ident : get_account(ident)
+      Openbill::Transaction
+        .where('from_account_id = ? or to_account_id = ?', account.id, account.id)
+    end
+
     # @param key - уникальный текстовый ключ транзакции
     #
     def make_transaction(from:, to:, amount:, key:, details: , meta: {})
