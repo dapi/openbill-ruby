@@ -6,7 +6,7 @@ module Openbill
   class Service
     def initialize(config)
       @config = config
-      @database = Openbill::Database.new config.database
+      # @database = Openbill::Database.new config.database
     end
 
     # @param ident - ident аккаунта в виде: [:category, :key]
