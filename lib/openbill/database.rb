@@ -8,6 +8,8 @@ module Openbill
       @db.extension :pg_hstore
     end
 
+    attr_reader :db
+
     delegate :logger, to: Rails
   end
 end

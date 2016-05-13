@@ -4,9 +4,25 @@ require 'money'
 module Openbill
 
   class Service
+    attr_reader :database, :config
+
     def initialize(config)
       @config = config
-      # @database = Openbill::Database.new config.database
+      @database = Openbill::Database.new config.database
+    end
+
+    def categories
+      database
+        .db[ACCOUNTS_TABLE_NAME]
+        .group_and_count(:category)
+        .all
+        .map { |raw| Category.new name: raw[:category], accounts_count: raw[:count] }
+    end
+
+    # Return accounts repositiory (actualy sequel dataset)
+    #
+    def accounts
+      Openbill::Account.dataset
     end
 
     # @param ident - ident аккаунта в виде: [:category, :key]
@@ -74,7 +90,6 @@ module Openbill
 
     private
 
-    attr_reader :database, :config
 
     delegate :logger, to: Rails
 

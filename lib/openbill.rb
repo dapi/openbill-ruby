@@ -1,7 +1,9 @@
 require 'openbill/engine'
+
 module Openbill
-  autoload :Service,       'openbill/service'
+  autoload :Category,      'openbill/category'
   autoload :Account,       'openbill/account'
+  autoload :Service,       'openbill/service'
   autoload :Transaction,   'openbill/transaction'
   autoload :Configuration, 'openbill/configuration'
   autoload :Registry,      'openbill/registry'
@@ -17,6 +19,7 @@ module Openbill
 
     def configure
       yield self.config
+      service
     end
 
     def config
@@ -24,9 +27,20 @@ module Openbill
     end
 
     def current
-      return @current if @current
+      deprecate 'Openbill.current is deprecated. Use Openbill.service instead'
+      service
+    end
 
-      @current = Openbill::Service.new config
+    # Return default Openbill::Service instance
+    #
+    def service
+      return @service if @service
+
+      @service = Openbill::Service.new config
+    end
+
+    def deprecate(message)
+      STDERR.puts "DEPRECATE: #{message}"
     end
   end
 end
