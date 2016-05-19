@@ -25,8 +25,8 @@ module Openbill::Migration
   end
 
   def openbill_reset
-    down
-    up
+    openbill_down
+    openbill_up
   end
 
   def sql_dir
