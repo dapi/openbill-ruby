@@ -1,4 +1,4 @@
--- Запрещаем удаление и какое-либо изменение accounts
+-- Disable delete and update in OPENBILL_ACCOUNTS
 
 CREATE OR REPLACE FUNCTION disable_update_account() RETURNS TRIGGER AS $disable_update_account$
 DECLARE

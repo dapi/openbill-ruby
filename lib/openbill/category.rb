@@ -1,8 +1,7 @@
 module Openbill
-  class Category
-    include Virtus.model
-
-    attribute :name, String
-    attribute :accounts_count, Integer
+  class Category < Sequel::Model(CATEGORIES_TABLE_NAME)
+    def accounts_count
+      # unknown
+    end
   end
 end
