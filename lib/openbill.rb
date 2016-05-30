@@ -10,6 +10,7 @@ module Openbill
   autoload :Database,      'openbill/database'
 
   ACCOUNTS_TABLE_NAME     = :openbill_accounts
+  CATEGORIES_TABLE_NAME   = :openbill_categories
   TRANSACTIONS_TABLE_NAME = :openbill_transactions
 
   class << self

@@ -2,8 +2,9 @@ require 'sequel'
 require 'money'
 
 module Openbill
-
   class Service
+    ACCOUNT_IDENT_DELIMETER = '/'
+
     attr_reader :database, :config
 
     def initialize(config)
@@ -12,11 +13,7 @@ module Openbill
     end
 
     def categories
-      database
-        .db[ACCOUNTS_TABLE_NAME]
-        .group_and_count(:category)
-        .all
-        .map { |raw| Category.new name: raw[:category], accounts_count: raw[:count] }
+      Openbill::Category.dataset
     end
 
     # Return accounts repositiory (actualy sequel dataset)
@@ -48,15 +45,17 @@ module Openbill
 
     # @param ident - ident аккаунта в виде: [:category, :key]
     def get_account(ident)
-      category, key = prepare_ident ident
-      Openbill::Account[category: category, key: key]
+      category_key, account_key = prepare_ident ident
+      Openbill::Account.join(CATEGORIES_TABLE_NAME, id: :category_id, key: category_key)['openbill_accounts.key' => account_key]
     end
 
     def create_account(ident, currency: nil, details: nil, meta: {})
-      category, key = prepare_ident ident
+      category_key, account_key = prepare_ident ident
+      category = Openbill::Category[key: category_key]
+      fail "No such category #{category_key}" unless category
       Openbill::Account.create(
-        category:        category,
-        key:             key,
+        category_id:     category.id,
+        key:             account_key,
         details:         details,
         meta:            meta,
         amount_currency: currency || config.default_currency
@@ -107,8 +106,13 @@ module Openbill
     end
 
     def prepare_ident(ident)
-      fail "ident has wrong size" unless ident.count == 2
-      return ident.first.to_s, ident.second.to_s
+      if ident.count == 1
+        return ident.to_s.split ACCOUNT_IDENT_DELIMETER
+      elsif ident.count == 2
+        return ident.first.to_s, ident.second.to_s
+      else
+        fail "ident has wrong size"
+      end
     end
 
     def prepare_amount(amount, account_currency)

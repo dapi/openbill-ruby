@@ -1,4 +1,4 @@
--- Запрещаем удаление и какое-либо изменение transactions
+-- Disable delete and update of OPENBILL_TRANSACTIONS table
 
 CREATE OR REPLACE FUNCTION disable_update_transaction() RETURNS TRIGGER AS $disable_update_transaction$
 BEGIN
