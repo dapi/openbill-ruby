@@ -5,6 +5,11 @@ module Openbill
   class Service
     ACCOUNT_IDENT_DELIMETER = '/'
 
+    Error = Class.new StandardError
+    NoSuchAccount = Class.new Error
+    NoSuchCategory = Class.new Error
+    WrongCurrency = Class.new Error
+
     attr_reader :database, :config
 
     def initialize(config)
@@ -26,33 +31,31 @@ module Openbill
     #
     # @param options - опции применяемые для создания аккаунта (см create_account)
     #
-    def account(ident, currency: nil, details: nil, meta: {})
+    def account(ident, category_key:, currency: nil, details: nil, meta: {})
       account = get_account(ident)
       currency ||= config.default_currency
 
       if account.present?
-        fail "Account currency is wrong #{account.amount_currency} <> #{currency}" unless account.amount_currency == currency
-        # TODO update details and meta
+        # TODO: Do we need to update account details and meta?
+        fail WrongCurrency, "Account currency is wrong #{account.amount_currency} <> #{currency}" unless account.amount_currency == currency
         return account
+      else
+        create_account ident, category_key: category_key, currency: currency, details: details, meta: meta
       end
-
-      create_account(ident, currency: currency, details: details, meta: meta)
     end
 
     def get_account_by_id(id)
       Openbill::Account[id: id]
     end
 
-    # @param ident - ident аккаунта в виде: [:category, :key]
-    def get_account(ident)
-      category_key, account_key = prepare_ident ident
-      Openbill::Account.join(CATEGORIES_TABLE_NAME, id: :category_id, key: category_key)['openbill_accounts.key' => account_key]
+    # @param key - key аккаунта
+    def get_account(key)
+      Openbill::Account[key: key]
     end
 
-    def create_account(ident, currency: nil, details: nil, meta: {})
-      category_key, account_key = prepare_ident ident
+    def create_account(ident, category_key: , currency: nil, details: nil, meta: {})
       category = Openbill::Category[key: category_key]
-      fail "No such category #{category_key}" unless category
+      fail NoSuchCategory, "No such category #{category_key}" unless category
       Openbill::Account.create(
         category_id:     category.id,
         key:             account_key,
@@ -96,22 +99,12 @@ module Openbill
       case account
       when Fixnum
         get_account_by_id(account)
-      when Array
+      when String, Symbol
         get_account(account)
       when Openbill::Account
         account
       else
         fail "Unknown type of account #{account}. Must be Fixnum, Array or Openbill::Account"
-      end
-    end
-
-    def prepare_ident(ident)
-      if ident.count == 1
-        return ident.to_s.split ACCOUNT_IDENT_DELIMETER
-      elsif ident.count == 2
-        return ident.first.to_s, ident.second.to_s
-      else
-        fail "ident has wrong size"
       end
     end
 
