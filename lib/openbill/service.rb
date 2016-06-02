@@ -54,7 +54,7 @@ module Openbill
     end
 
     def create_account(ident, category_key: , currency: nil, details: nil, meta: {})
-      category = Openbill::Category[key: category_key]
+      category = Openbill::Category[key: category_key.to_s]
       fail NoSuchCategory, "No such category #{category_key}" unless category
       Openbill::Account.create(
         category_id:     category.id,
