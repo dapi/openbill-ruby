@@ -1,8 +1,11 @@
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 CREATE EXTENSION IF NOT EXISTS hstore WITH SCHEMA public;
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public; 
 
 CREATE                TABLE OPENBILL_CATEGORIES (
   id                  BIGSERIAL PRIMARY KEY,
+  uuid                UUID DEFAULT gen_random_uuid(),
+
   name               character varying(256) not null,
   key                 character varying(64) not null,
   parent_id           integer,
@@ -16,6 +19,7 @@ INSERT INTO OPENBILL_CATEGORIES  (name, key) values ('System', 'system');
 
 CREATE                TABLE OPENBILL_ACCOUNTS (
   id                  BIGSERIAL PRIMARY KEY,
+  uuid                UUID DEFAULT gen_random_uuid(),
   category_id         integer not null,
   key                 character varying(256) not null,
   amount_cents        numeric not null default 0,
@@ -37,6 +41,7 @@ CREATE INDEX index_accounts_on_created_at ON OPENBILL_ACCOUNTS USING btree (crea
 
 CREATE TABLE OPENBILL_TRANSACTIONS (
   id              BIGSERIAL PRIMARY KEY,
+  uuid            UUID DEFAULT gen_random_uuid(),
   username        character varying(255) not null,
   created_at      timestamp without time zone default current_timestamp,
   from_account_id integer not null,
