@@ -3,5 +3,9 @@ module Openbill
     def accounts_count
       # unknown
     end
+
+    def to_s
+      name
+    end
   end
 end

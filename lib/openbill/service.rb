@@ -17,6 +17,10 @@ module Openbill
       @database = Openbill::Database.new config.database
     end
 
+    def policies
+      Openbill::Policy.dataset
+    end
+
     def categories
       Openbill::Category.dataset
     end
@@ -31,8 +35,8 @@ module Openbill
     #
     # @param options - опции применяемые для создания аккаунта (см create_account)
     #
-    def account(ident, category_key:, currency: nil, details: nil, meta: {})
-      account = get_account(ident)
+    def get_or_create_account_by_key(key, category_id:, currency: nil, details: nil, meta: {})
+      account = get_account_by_key(ident)
       currency ||= config.default_currency
 
       if account.present?
@@ -40,7 +44,20 @@ module Openbill
         fail WrongCurrency, "Account currency is wrong #{account.amount_currency} <> #{currency}" unless account.amount_currency == currency
         return account
       else
-        create_account ident, category_key: category_key, currency: currency, details: details, meta: meta
+        create_account ident, category_id: category_id, currency: currency, details: details, meta: meta
+      end
+    end
+
+    def get_account(account)
+      case account
+      when String
+        get_account_by_id(account)
+      when Symbol
+        get_account_by_key(account)
+      when Openbill::Account
+        account
+      else
+        fail "Unknown type of account #{account}. Must be Fixnum, Array or Openbill::Account"
       end
     end
 
@@ -49,20 +66,32 @@ module Openbill
     end
 
     # @param key - key аккаунта
-    def get_account(key)
-      Openbill::Account[key: key]
+    def get_account_by_key(key)
+      Openbill::Account[key: key.to_s]
     end
 
-    def create_account(account_key, category_key: , currency: nil, details: nil, meta: {})
-      category = Openbill::Category[key: category_key.to_s]
-      fail NoSuchCategory, "No such category #{category_key}" unless category
-      Openbill::Account.create(
-        category_id:     category.id,
+    def create_account(account_key, category_id:, id: nil, currency: nil, details: nil, meta: {})
+      attrs = {
+        category_id:     category_id,
         key:             account_key,
         details:         details,
         meta:            meta,
         amount_currency: currency || config.default_currency
-      )
+      }
+      unless id.nil?
+        attrs[:id] = id
+        Openbill::Account.unrestrict_primary_key
+      end
+      Openbill::Account.create(attrs)
+    end
+
+    def create_category(name, id: nil, parent_id: nil)
+      attrs = { name: name, parent_id: parent_id }
+      unless id.nil?
+        attrs[:id] = id
+        Openbill::Category.unrestrict_primary_key
+      end
+      Openbill::Category.create(attrs)
     end
 
     def account_transactions(ident)
@@ -74,8 +103,8 @@ module Openbill
     # @param key - уникальный текстовый ключ транзакции
     #
     def make_transaction(from:, to:, amount:, key:, details: , meta: {})
-      account_from = get_account_id from
-      account_to = get_account_id to
+      account_from = get_account from
+      account_to = get_account to
 
       amount = prepare_amount amount, account_from.amount_currency
 
@@ -92,21 +121,7 @@ module Openbill
 
     private
 
-
     delegate :logger, to: Rails
-
-    def get_account_id(account)
-      case account
-      when Fixnum
-        get_account_by_id(account)
-      when String, Symbol
-        get_account(account)
-      when Openbill::Account
-        account
-      else
-        fail "Unknown type of account #{account}. Must be Fixnum, Array or Openbill::Account"
-      end
-    end
 
     def prepare_amount(amount, account_currency)
       if amount.is_a? Money
