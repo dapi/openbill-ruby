@@ -36,7 +36,7 @@ module Openbill
     # @param options - опции применяемые для создания аккаунта (см create_account)
     #
     def get_or_create_account_by_key(key, category_id:, currency: nil, details: nil, meta: {})
-      account = get_account_by_key(ident)
+      account = get_account_by_key(key)
       currency ||= config.default_currency
 
       if account.present?
@@ -44,7 +44,7 @@ module Openbill
         fail WrongCurrency, "Account currency is wrong #{account.amount_currency} <> #{currency}" unless account.amount_currency == currency
         return account
       else
-        create_account ident, category_id: category_id, currency: currency, details: details, meta: meta
+        create_account key, category_id: category_id, currency: currency, details: details, meta: meta
       end
     end
 
