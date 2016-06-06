@@ -119,6 +119,10 @@ module Openbill
       )
     end
 
+    def get_transaction(id)
+      Openbill::Transaction[id]
+    end
+
     private
 
     delegate :logger, to: Rails
