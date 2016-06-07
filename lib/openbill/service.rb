@@ -21,6 +21,10 @@ module Openbill
       Openbill::Policy.dataset
     end
 
+    def transactions
+      Openbill::Transaction.dataset
+    end
+
     def categories
       Openbill::Category.dataset
     end
@@ -29,6 +33,10 @@ module Openbill
     #
     def accounts
       Openbill::Account.dataset
+    end
+
+    def get_category(id)
+      Openbill::Category[id: id]
     end
 
     # @param ident - ident аккаунта в виде: [:category, :key]
@@ -120,7 +128,7 @@ module Openbill
     end
 
     def get_transaction(id)
-      Openbill::Transaction[id]
+      Openbill::Transaction[id: id]
     end
 
     private
