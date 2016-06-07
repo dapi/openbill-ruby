@@ -29,6 +29,11 @@ module Openbill
       Openbill::Category.dataset
     end
 
+    def notify_transaction(transaction)
+      transaction_id = transaction.is_a?(Openbill::Transaction) ? transaction.id : transaction
+      Openbill.service.database.db.execute "notify #{TRANSACTIONS_TABLE_NAME}, '#{transaction_id}'"
+    end
+
     # Return accounts repositiory (actualy sequel dataset)
     #
     def accounts
