@@ -1,5 +1,8 @@
 # Openbill
 
+[![Build Status](https://travis-ci.org/openbill-service/openbill-ruby.svg)](https://travis-ci.org/openbill-service/openbill-ruby)
+
+
 Это модуль для биллиноговой системы [openbill-core](https://github.com/dapi/openbill-core).
 
 ## Installation
