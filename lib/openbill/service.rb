@@ -10,11 +10,13 @@ module Openbill
     NoSuchCategory = Class.new Error
     WrongCurrency = Class.new Error
 
-    attr_reader :database, :config
+    attr_reader :db, :config
 
     def initialize(config)
       @config = config
-      @database = Openbill::Database.new config
+      @db = Sequel.connect config.database, logger: config.logger, max_connections: config.max_connections
+      @db.extension :pagination
+      @db.extension :pg_hstore
     end
 
     def policies
@@ -31,7 +33,7 @@ module Openbill
 
     def notify_transaction(transaction)
       transaction_id = transaction.is_a?(Openbill::Transaction) ? transaction.id : transaction
-      Openbill.service.database.db.execute "notify #{TRANSACTIONS_TABLE_NAME}, '#{transaction_id}'"
+      db.execute "notify #{TRANSACTIONS_TABLE_NAME}, '#{transaction_id}'"
     end
 
     # Return accounts repositiory (actualy sequel dataset)

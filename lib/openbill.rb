@@ -7,7 +7,6 @@ module Openbill
   autoload :Service,       'openbill/service'
   autoload :Transaction,   'openbill/transaction'
   autoload :Configuration, 'openbill/configuration'
-  autoload :Database,      'openbill/database'
 
   ACCOUNTS_TABLE_NAME     = :openbill_accounts
   CATEGORIES_TABLE_NAME   = :openbill_categories
