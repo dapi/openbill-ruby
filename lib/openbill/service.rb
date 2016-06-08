@@ -14,7 +14,7 @@ module Openbill
 
     def initialize(config)
       @config = config
-      @database = Openbill::Database.new config.database
+      @database = Openbill::Database.new config
     end
 
     def policies
