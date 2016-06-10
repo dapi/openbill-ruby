@@ -6,11 +6,13 @@ module Openbill
   autoload :Policy,        'openbill/policy'
   autoload :Service,       'openbill/service'
   autoload :Transaction,   'openbill/transaction'
+  autoload :WebhookLog,    'openbill/webhook_log'
   autoload :Configuration, 'openbill/configuration'
 
   ACCOUNTS_TABLE_NAME     = :openbill_accounts
   CATEGORIES_TABLE_NAME   = :openbill_categories
   TRANSACTIONS_TABLE_NAME = :openbill_transactions
+  WEBHOOK_LOGS_TABLE_NAME = :openbill_webhook_logs
   POLICIES_TABLE_NAME     = :openbill_policies
 
   class << self

@@ -36,6 +36,10 @@ module Openbill
       db.execute "notify #{TRANSACTIONS_TABLE_NAME}, '#{transaction_id}'"
     end
 
+    def webhook_logs
+      Openbill::WebhookLog.dataset
+    end
+
     # Return accounts repositiory (actualy sequel dataset)
     #
     def accounts
