@@ -1,19 +1,23 @@
 require 'openbill/engine'
 
 module Openbill
-  autoload :Category,      'openbill/category'
-  autoload :Account,       'openbill/account'
-  autoload :Policy,        'openbill/policy'
-  autoload :Service,       'openbill/service'
-  autoload :Transaction,   'openbill/transaction'
-  autoload :WebhookLog,    'openbill/webhook_log'
-  autoload :Configuration, 'openbill/configuration'
+  autoload :Category,         'openbill/category'
+  autoload :Account,          'openbill/account'
+  autoload :Policy,           'openbill/policy'
+  autoload :Service,          'openbill/service'
+  autoload :Transaction,      'openbill/transaction'
+  autoload :WebhookLog,       'openbill/webhook_log'
+  autoload :Configuration,    'openbill/configuration'
+  autoload :Good,             'openbill/good'
+  autoload :GoodAvailability, 'openbill/good_availability'
 
-  ACCOUNTS_TABLE_NAME     = :openbill_accounts
-  CATEGORIES_TABLE_NAME   = :openbill_categories
-  TRANSACTIONS_TABLE_NAME = :openbill_transactions
-  WEBHOOK_LOGS_TABLE_NAME = :openbill_webhook_logs
-  POLICIES_TABLE_NAME     = :openbill_policies
+  ACCOUNTS_TABLE_NAME             = :openbill_accounts
+  CATEGORIES_TABLE_NAME           = :openbill_categories
+  TRANSACTIONS_TABLE_NAME         = :openbill_transactions
+  WEBHOOK_LOGS_TABLE_NAME         = :openbill_webhook_logs
+  POLICIES_TABLE_NAME             = :openbill_policies
+  GOODS_TABLE_NAME                = :openbill_goods
+  GOODS_AVAILABILITIES_TABLE_NAME = :openbill_goods_availabilities
 
   class << self
     def root
