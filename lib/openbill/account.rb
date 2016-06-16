@@ -1,8 +1,6 @@
 module Openbill
   class Account < Sequel::Model(ACCOUNTS_TABLE_NAME)
-    def category
-      Openbill::Category[category_id]
-    end
+    many_to_one :category, class: 'Openbill::Category'
 
     def amount
       Money.new amount_cents, amount_currency

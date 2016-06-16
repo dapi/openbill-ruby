@@ -40,6 +40,18 @@ module Openbill
       Openbill::WebhookLog.dataset
     end
 
+    def goods
+      Openbill::Good.dataset
+    end
+
+    def goods_availabilities
+      Openbill::GoodAvailability.dataset
+    end
+
+    def good_units
+      goods.select(:unit).distinct.order(Sequel.asc(:unit))
+    end
+
     # Return accounts repositiory (actualy sequel dataset)
     #
     def accounts
