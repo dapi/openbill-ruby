@@ -14,7 +14,7 @@ module Openbill
 
     def initialize(config)
       @config = config
-      @db = Sequel.connect config.database, logger: config.logger, max_connections: config.max_connections
+      @db = Sequel.connect config.database, logger: config.logger, max_connections: config.max_connections, reconnect: true
       @db.extension :pagination
       @db.extension :pg_hstore
     end
