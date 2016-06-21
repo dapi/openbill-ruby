@@ -1,3 +1,5 @@
+require 'openbill/database'
+
 module Openbill::Migration
   def up
     openbill_up
@@ -5,6 +7,10 @@ module Openbill::Migration
 
   def down
     openbill_down
+  end
+
+  def connection
+    @_connection ||= Openbill::Database.connection
   end
 
   private
