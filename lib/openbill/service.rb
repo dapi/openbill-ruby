@@ -88,7 +88,7 @@ module Openbill
       when Openbill::Account
         account
       else
-        fail "Unknown type of account #{account}. Must be Fixnum, Array or Openbill::Account"
+        fail "Unknown type of account '#{account}' (#{account.class}). Must be Fixnum, Array or Openbill::Account"
       end
     end
 
