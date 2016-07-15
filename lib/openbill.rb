@@ -6,6 +6,7 @@ module Openbill
   autoload :Policy,           'openbill/policy'
   autoload :Service,          'openbill/service'
   autoload :Transaction,      'openbill/transaction'
+  autoload :Operation,        'openbill/operation'
   autoload :WebhookLog,       'openbill/webhook_log'
   autoload :Configuration,    'openbill/configuration'
   autoload :Good,             'openbill/good'
@@ -14,6 +15,7 @@ module Openbill
   ACCOUNTS_TABLE_NAME             = :openbill_accounts
   CATEGORIES_TABLE_NAME           = :openbill_categories
   TRANSACTIONS_TABLE_NAME         = :openbill_transactions
+  OPERATIONS_TABLE_NAME           = :openbill_operations
   WEBHOOK_LOGS_TABLE_NAME         = :openbill_webhook_logs
   POLICIES_TABLE_NAME             = :openbill_policies
   GOODS_TABLE_NAME                = :openbill_goods

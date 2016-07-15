@@ -27,6 +27,10 @@ module Openbill
       Openbill::Transaction.dataset
     end
 
+    def operations
+      Openbill::Operation.dataset
+    end
+
     def categories
       Openbill::Category.dataset
     end
