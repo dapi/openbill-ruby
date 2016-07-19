@@ -137,7 +137,7 @@ module Openbill
 
     # @param key - уникальный текстовый ключ транзакции
     #
-    def make_transaction(from:, to:, amount:, key:, details: , meta: {})
+    def make_transaction(from:, to:, amount:, key:, details: , date: nil, meta: {})
       account_from = get_account from
       account_to = get_account to
 
@@ -148,6 +148,7 @@ module Openbill
         to_account_id:   account_to.id,
         amount_cents:    amount.cents,
         amount_currency: amount.currency.iso_code,
+        date:            date,
         key:             key,
         details:         details,
         meta:            meta
