@@ -147,7 +147,7 @@ module Openbill
         from_account_id: account_from.id,
         to_account_id:   account_to.id,
         amount_cents:    amount.cents,
-        amount_currency: amount.currency,
+        amount_currency: amount.currency.iso_code,
         key:             key,
         details:         details,
         meta:            meta
