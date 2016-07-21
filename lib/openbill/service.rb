@@ -17,6 +17,7 @@ module Openbill
       @db = Sequel.connect config.database, logger: config.logger, max_connections: config.max_connections, reconnect: true
       @db.extension :pagination
       @db.extension :pg_hstore
+      load_models
     end
 
     def policies
@@ -162,6 +163,11 @@ module Openbill
     private
 
     delegate :logger, to: Rails
+
+    # get db schemas
+    def load_models
+      [Openbill::Transaction, Openbill::Account, Openbill::Policy, Openbill::Good, Openbill::Category, Openbill::Operation, Openbill::GoodAvailability, Openbill::WebhookLog]
+    end
 
     def prepare_amount(amount, account_currency)
       if amount.is_a? Money
