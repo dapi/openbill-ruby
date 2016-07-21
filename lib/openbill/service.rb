@@ -79,7 +79,7 @@ module Openbill
         fail WrongCurrency, "Account currency is wrong #{account.amount_currency} <> #{currency}" unless account.amount_currency == currency
         return account
       else
-        create_account key, category_id: category_id, currency: currency, details: details, meta: meta
+        create_account key, category_id: category_id, currency: currency, details: details, meta: Sequel.hstore(meta)
       end
     end
 
