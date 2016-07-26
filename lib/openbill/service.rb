@@ -17,6 +17,7 @@ module Openbill
       @db = Sequel.connect config.database, logger: config.logger, max_connections: config.max_connections, reconnect: true
       @db.extension :pagination
       @db.extension :pg_hstore
+
       load_models
     end
 
@@ -36,11 +37,6 @@ module Openbill
       Openbill::Category.dataset
     end
 
-    def notify_transaction(transaction)
-      transaction_id = transaction.is_a?(Openbill::Transaction) ? transaction.id : transaction
-      db.execute "notify #{TRANSACTIONS_TABLE_NAME}, '#{transaction_id}'"
-    end
-
     def webhook_logs
       Openbill::WebhookLog.dataset
     end
@@ -53,14 +49,19 @@ module Openbill
       Openbill::GoodAvailability.dataset
     end
 
-    def good_units
-      goods.select(:unit).distinct.order(Sequel.asc(:unit))
-    end
-
     # Return accounts repositiory (actualy sequel dataset)
     #
     def accounts
       Openbill::Account.dataset
+    end
+
+    def notify_transaction(transaction)
+      transaction_id = transaction.is_a?(Openbill::Transaction) ? transaction.id : transaction
+      db.execute "notify #{TRANSACTIONS_TABLE_NAME}, '#{transaction_id}'"
+    end
+
+    def good_units
+      goods.select(:unit).distinct.order(Sequel.asc(:unit))
     end
 
     def get_category(id)
@@ -166,7 +167,16 @@ module Openbill
 
     # get db schemas
     def load_models
-      [Openbill::Transaction, Openbill::Account, Openbill::Policy, Openbill::Good, Openbill::Category, Openbill::Operation, Openbill::GoodAvailability, Openbill::WebhookLog]
+      [Openbill::Transaction,
+       Openbill::Account,
+       Openbill::Category,
+       Openbill::Policy,
+       Openbill::Good,
+       Openbill::GoodAvailability,
+       Openbill::Operation,
+       Openbill::WebhookLog].each do |model|
+         model.db = db
+      end
     end
 
     def prepare_amount(amount, account_currency)
