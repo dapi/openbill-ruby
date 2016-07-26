@@ -6,6 +6,10 @@ module Openbill
       Money.new amount_cents, amount_currency
     end
 
+    def <=> (other)
+      id <=> other.id
+    end
+
     def to_s
       key
     end

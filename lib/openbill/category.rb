@@ -4,6 +4,10 @@ module Openbill
       # unknown
     end
 
+    def <=> (other)
+      id <=> other.id
+    end
+
     def to_s
       name
     end

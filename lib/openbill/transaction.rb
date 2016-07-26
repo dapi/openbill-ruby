@@ -9,6 +9,10 @@ module Openbill
     # Original transaction
     one_to_one :reverse_transaction, class: 'Openbill::Transaction', primary_key: :reverse_transaction_id, key: :id
 
+    def <=> (other)
+      id <=> other.id
+    end
+
     def amount
       Money.new amount_cents, amount_currency
     end
