@@ -1,16 +1,36 @@
 language: ruby
+sudo: required
 addons:
   postgresql: "9.5"
-services:
-  - postgresql
 
+# Another solution for pg 9.5 for travis
+#
+# https://github.com/travis-ci/travis-ci/issues/4264#issuecomment-229057724
+#
+before_install:
+  - sudo /etc/init.d/postgresql stop
+  - sudo apt-get -y remove --purge postgresql-9.1
+  - sudo apt-get -y remove --purge postgresql-9.2
+  - sudo apt-get -y remove --purge postgresql-9.3
+  - sudo apt-get -y remove --purge postgresql-9.4
+  - sudo apt-get -y autoremove
+  - sudo apt-key adv --keyserver keys.gnupg.net --recv-keys 7FCC7D46ACCC4CF8
+  - sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main 9.5" >> /etc/apt/sources.list.d/postgresql.list'
+  - sudo apt-get update
+  - sudo apt-get -y install postgresql-9.5
+  - sudo sh -c 'echo "local all all trust" > /etc/postgresql/9.5/main/pg_hba.conf'
+  - sudo sh -c 'echo -n "host all all 127.0.0.1/32 trust" >> /etc/postgresql/9.5/main/pg_hba.conf'
+  - sudo /etc/init.d/postgresql restart
+  - psql --version
 rvm:
   - 2.2.4
-
+env:
+  - PGVERSION=9.5 PGUSER=postgres
 before_script:
   - cd ./test/dummy
   - cp ./config/database.travis.yml ./config/database.yml
   - bundle
   - RAILS_ENV=test bundle exec rake db:create db:migrate
+  - cd ../..
 script:
   - bundle exec rake
