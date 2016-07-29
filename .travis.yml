@@ -3,8 +3,14 @@ addons:
   postgresql: "9.5"
 services:
   - postgresql
+
 rvm:
-  - 2.2.1
-sudo: false
-cache: bundler
-before_install: gem install bundler -v 1.10.6
+  - 2.2.4
+
+before_script:
+  - cd ./test/dummy
+  - cp ./config/database.travis.yml ./config/database.yml
+  - bundle
+  - RAILS_ENV=test bundle exec rake db:create db:migrate
+script:
+  - bundle exec rake

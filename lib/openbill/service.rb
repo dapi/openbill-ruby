@@ -137,9 +137,34 @@ module Openbill
         .where('from_account_id = ? or to_account_id = ?', account.id, account.id)
     end
 
+    # return tansaction id
+    #
+    def upsert_transaction(from:, to:, amount:, key:, details:, date:, meta: {})
+      raise 'SQL server does not support conflict inserts. Use PostgreSQL v9.5 or greater' unless transactions.supports_insert_conflict?
+
+      account_from = get_account from
+      account_to = get_account to
+
+      amount = prepare_amount amount, account_from.amount_currency
+
+      attrs = {
+        from_account_id: account_from.id,
+        to_account_id:   account_to.id,
+        amount_cents:    amount.cents,
+        amount_currency: amount.currency.iso_code,
+        date:            date,
+        details:         details,
+        meta:            Sequel.hstore(meta)
+      }
+
+      transactions
+        .insert_conflict( target: :key, update: attrs )
+        .insert(attrs.merge(key: key))
+    end
+
     # @param key - уникальный текстовый ключ транзакции
     #
-    def make_transaction(from:, to:, amount:, key:, details: , date: nil, meta: {})
+    def make_transaction(from:, to:, amount:, key:, details: , date: , meta: {})
       account_from = get_account from
       account_to = get_account to
 
@@ -153,7 +178,7 @@ module Openbill
         date:            date,
         key:             key,
         details:         details,
-        meta:            meta
+        meta:            Sequel.hstore(meta)
       )
     end
 

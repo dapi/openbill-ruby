@@ -1,4 +1,7 @@
 /.bundle/
+gems.tags
+tags
+*.log
 /.yardoc
 /Gemfile.lock
 /_yardoc/
