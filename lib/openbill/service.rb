@@ -186,6 +186,10 @@ module Openbill
       Openbill::Transaction[id: id]
     end
 
+    def get_pending_webhooks_transactions
+      Openbill::Transaction.with_pending_webhooks
+    end
+
     private
 
     delegate :logger, to: Rails
