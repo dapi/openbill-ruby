@@ -18,6 +18,7 @@ gemspec
 gem 'rails', '~> 4.0'
 gem 'sequel'
 gem 'money'
+gem 'ruby_dep', '~> 1.3.1'
 gem 'money-rails', github: 'RubyMoney/money-rails'
 
 group :test, :development do

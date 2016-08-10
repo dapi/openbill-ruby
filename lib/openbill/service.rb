@@ -55,6 +55,10 @@ module Openbill
       Openbill::Account.dataset
     end
 
+    def accounts_at_date(date)
+      Openbill::Account.at_date date
+    end
+
     def notify_transaction(transaction)
       transaction_id = transaction.is_a?(Openbill::Transaction) ? transaction.id : transaction
       db.execute "notify #{TRANSACTIONS_TABLE_NAME}, '#{transaction_id}'"
