@@ -11,6 +11,7 @@ module Openbill
   autoload :Configuration,    'openbill/configuration'
   autoload :Good,             'openbill/good'
   autoload :GoodAvailability, 'openbill/good_availability'
+  autoload :Invoice,          'openbill/invoice'
 
   ACCOUNTS_TABLE_NAME             = :openbill_accounts
   CATEGORIES_TABLE_NAME           = :openbill_categories
@@ -20,6 +21,7 @@ module Openbill
   POLICIES_TABLE_NAME             = :openbill_policies
   GOODS_TABLE_NAME                = :openbill_goods
   GOODS_AVAILABILITIES_TABLE_NAME = :openbill_goods_availabilities
+  INVOICES_TABLE_NAME             = :openbill_invoices
 
   class << self
     def root
