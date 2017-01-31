@@ -29,6 +29,10 @@ module Openbill
       Openbill::Transaction.dataset
     end
 
+    def invoices
+      Openbill::Invoice.dataset
+    end
+
     def operations
       Openbill::Operation.dataset
     end
